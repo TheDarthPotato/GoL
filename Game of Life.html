@@ -1,0 +1,436 @@
+ <!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!--
+//////////////PRACTICA REALIZADA POR DIEGO PENEDO ANDRES//////////
+-->
+<html>
+    <head>
+        <title>Game of Life</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    </head>
+    
+    <body>
+        
+        
+        <canvas id="lienzo" width="400" height="400" style="border:1px solid #000000;">
+            
+        </canvas>
+        <button type="button" id="boton1">Jugar</button>
+        <button type="button" id="boton2">Detener</button>
+        <canvas id="lienzo2" width="800" height="70">Tu navegador no soporta el elemento canvas.</canvas>
+        <canvas id="lienzo3" width="800" height="10">Tu navegador no soporta el elemento canvas.</canvas>
+        <p>Cambiar tamaño del juego: </p>
+        <button type="button" id="boton3">-</button>
+        <button type="button" id="boton4">+</button>
+        <script language="javascript">
+            var contextoGrafico = document.getElementById('lienzo').getContext('2d');//Inicializamos el lienzo
+            var contextoTexto   = document.getElementById('lienzo2').getContext('2d');
+            var contextoTexto2   = document.getElementById('lienzo2').getContext('2d');
+    var tamaño = 40;//Aqui se escribe el tamaño, este numero indica el numero de cuadrados por fila/columna.
+    var tiempoSim = 0;//Aqui registramos cuanto tiempo lleva la simulacion
+            lienzo.height = tamaño*10;//Con esto podemos modificar el lienzo entero con la variable tamaño
+            lienzo.width = tamaño*10;
+            class celula{
+               constructor(estado, tiempoViva,cambiaTurno, vecinas){//Se construye la clase celula
+                this.estado = estado;//Registramos el estado. 0 es muerta, 1 es viva, asi lo tendremos en cuenta en el resto de la practica.
+                this.tiempoViva = tiempoViva;//Aqui guardaremos el tiempo que lleve viva la celula.
+                this.cambiaTurno = cambiaTurno;//Aqui registramos si la celula va a cambiar de estado, pero lo guardamos aqui en vez de cambiarlo directamente para poder cambiar todas a la vez sin que se afecten entre ellas.
+                this.vecinas = vecinas;//Numero de celulas vivas alrededor
+            }
+            }
+
+function mundo(){//Creamos lo que seria el objeto mundo
+            var anchoMundo = tamaño*tamaño;//Aqui calculamos el numero de celulas totales en el mundo,
+            this.casilla = new Array(anchoMundo);//Creamos el array que registrara las casillas y sus propiedades
+            for (i = 0; i < tamaño; i++) {
+               this.casilla[i] = new Array(anchoMundo);
+                 for (j = 0; j < tamaño; j++) {
+
+             
+             this.casilla[i][j] = new celula();//Asignamos el array bidimensional a una clase celula, para que guarde sus propiedades.
+             this.casilla[i][j].estado = 0;//Registramos las propiedades base de la celila en cueston 
+                this.casilla[i][j].tiempoViva = 0;//Aqui se guarda el tiempo que lleve viva una celula
+                this.casilla[i][j].cambiaTurno = 2;//2 es el default que indica que la celula no cambia este turno
+                
+             }
+             }
+             pintarCuadricula();//Llamamos a la funcion que pinta la cuadricula
+         }
+
+function pintarCuadricula(){//Esta funcion pinta la cuadricula cuando sea necesario, ya que al usar la funcion pintarCelula deja el lienzo en blanco y hay que volver a pintarla
+    var anchoMundo = tamaño*tamaño;
+    for (i = 0; i < tamaño; i++) {//Recorremos en el eje de las x el tamaño 
+                 contextoGrafico.beginPath();//Pintamos una recta que comience cada 10 pixeles y termine al final del lienzo
+contextoGrafico.moveTo(10*i,0);
+contextoGrafico.lineTo(10*i,anchoMundo);
+contextoGrafico.closePath();
+contextoGrafico.stroke();
+
+             }
+             for (j = 0; j < tamaño; j++) {//Hacemos lo mismo en el eje de las y
+                 contextoGrafico.beginPath();
+contextoGrafico.moveTo(0,10*j);
+contextoGrafico.lineTo(anchoMundo,10*j);
+contextoGrafico.closePath();
+contextoGrafico.stroke();
+             }
+}
+           
+            function pintarCelula(){
+        for (i = 0; i < tamaño; i++) {//Recorremos todas las celulas
+                 for (j = 0; j < tamaño; j++) {
+                     if(nuevoMundo.casilla[i][j].estado === 1){//Si la celula esta identificada como viva, e pinta un cuadrado relleno
+                         contextoGrafico.fillRect(i*10,j*10,10,10);
+                    
+            }if(nuevoMundo.casilla[i][j].estado === 0){//Si se identifica como muerta, la pintamos de blanco
+                contextoGrafico.clearRect(i*10,j*10,10,10);
+            }
+                 }
+             }      
+             pintarCuadricula();//Llamamos a pintar cuadricula de nuevo, ya que al pintar cuadrados blancos se pueden borrar trozos de ella
+    }
+             var nuevoMundo = new mundo();//Inicializamos el mundo
+             //Llamamos a los eventos tanto de raton como de boton
+document.getElementById('boton3').addEventListener("click",manejaboton3,false);
+document.getElementById('boton4').addEventListener("click",manejaboton4,false);             
+document.getElementById('lienzo').addEventListener("mousemove", manejaraton, true);
+document.getElementById('lienzo').addEventListener("click", manejaraton, false);
+//document.getElementById('lienzo').addEventListener("mouseover", manejaraton, false);
+document.getElementById('boton1').addEventListener("click",manejaboton,false);
+document.getElementById('boton2').addEventListener("click",manejaboton2,false);
+
+
+    var temporizador;
+    function manejaboton(){//Boton que inicia el temporizador que indica cada cuanto ocurre un turno
+    if(this.id==="boton1") {
+            temporizador = setInterval(turno, 100);
+                }
+}
+function manejaboton2(){//Boton que finaliza el temporizador
+    if(this.id==="boton2") {
+        clearInterval(temporizador);
+    }}
+function manejaboton3(){
+    tamaño--;
+    lienzo.height = tamaño*10;
+            lienzo.width = tamaño*10;
+            nuevoMundo = new mundo();
+}
+function manejaboton4(){
+    tamaño++;
+    lienzo.height = tamaño*10;
+            lienzo.width = tamaño*10;
+            nuevoMundo = new mundo();
+}
+
+function updateText() {
+    var tAMostrar = tiempoSim;
+    tAMostrar += 1;
+    var texto2 = "Simulacion en marcha: Paso " + tAMostrar;//Escribimos cuanto tiempo lleva activa la simulacion
+    contextoTexto2.clearRect(0,50,800,50);
+    contextoTexto2.font="18px Courier New";
+    contextoTexto2.fillText(texto2,10,70);
+}
+
+ function manejaraton(e) {
+                switch(e.type) {
+                    case "mousemove":
+                         var dimensionesinternas = this.getBoundingClientRect();
+                        var posCuadroX = Math.floor((e.pageX - dimensionesinternas.left)/10);	
+                        var posCuadroY = Math.floor((e.pageY - dimensionesinternas.top)/10);
+//Dividimos las posiciones entre 10 y las redondeamos hacia abajo para que se correspondan con coordenadas de las celulas
+                        var texto = "La celula (" + posCuadroX + ", " + posCuadroY + ") Lleva viva " + nuevoMundo.casilla[posCuadroX][posCuadroY].tiempoViva + " pasos.";
+                        contextoTexto.clearRect(0,0,800,50);
+                        contextoTexto.font="28px Times New";
+                        contextoTexto.strokeText(texto,10,30);
+                        
+                        break;	
+                     case "click"://En caso de hacer click en un cuadrado
+                         var dimensionesinternas = this.getBoundingClientRect();
+                        var posCuadroXclick = e.pageX - dimensionesinternas.left;//Registramos las posiciones
+                        var posCuadroYclick = e.pageY - dimensionesinternas.top;
+                        var celulaX = Math.floor(posCuadroXclick/10);//Dividimos las posiciones entre 10 y las redondeamos hacia abajo para que se correspondan con coordenadas de las celulas
+                        var celulaY = Math.floor(posCuadroYclick/10);
+                        if(nuevoMundo.casilla[celulaX][celulaY].estado === 0){//Si la celula a la que hemos hecho click esta muerta, vive
+                        nuevoMundo.casilla[celulaX][celulaY].estado = 1;//Lo registramos en estado
+                        nuevoMundo.casilla[celulaX][celulaY].tiempoViva = 1;
+                    }else if(nuevoMundo.casilla[celulaX][celulaY].estado === 1){//Y viceversa
+                        nuevoMundo.casilla[celulaX][celulaY].estado = 0;
+                        nuevoMundo.casilla[celulaX][celulaY].tiempoViva = 0;
+                    }
+                    pintarCelula();//Llamamos a la funcion que pinta las celulas en funcion de sus estados
+                break;
+
+
+            }
+        }
+
+        function calculaVecinas(){
+            var calcTam = (tamaño - 1);
+            //Como 1 en el estado significa que la celula esta viva, leo todas las celulas de alrededor, calculando sus posiciones de manera generica por si cambia el tamaño del mundo
+ for (i = 1; i < calcTam; i++) {//Esto para todas las celulas que no esten en los extremos
+                 for (j = 1; j < calcTam; j++) {
+
+                var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                 }}
+             //Ahora calculamos teniendo en cuenta los extremos, para que conecten con el extremo opuesto y den la sensacion de un mundo infinito
+             for (j = 1; j < calcTam; j++) {//Calcular la columna izquierda
+                  i = 0;
+            var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i+calcTam][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+             }
+       for (i = 1; i < calcTam; i++) {//Calcular fila de arriba
+              j = 0;
+                var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j+calcTam].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+calcTam].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+calcTam].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+    }
+    for (j = 1; j < calcTam; j++) {//Calcular columna derecha
+        i = calcTam;
+        var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+    }
+    for (i = 1; i < calcTam; i++) {//Calcular fila de abajo
+        j = calcTam;
+
+                var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j-calcTam].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-calcTam].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-calcTam].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                 }
+                 //Calcular esquina superior izquierda
+                 i=0;
+                 j=0;
+                 var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i+calcTam][j+calcTam].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+calcTam].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+calcTam].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                     //Calcular esquina superior derecha
+                 i=calcTam;         
+                 j=0;
+         var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j+calcTam].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+calcTam].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j+calcTam].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j+1].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j+1].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j+1].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                     //Calcular esquina inferior derecha
+                     i=calcTam;
+                     j=calcTam;
+                     var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i-1][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-1][j-calcTam].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-calcTam].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i-calcTam][j-calcTam].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                     //Calcular esquina inferior izquierda
+                     i = 0;
+                     j = calcTam;
+                     var vecinasVivas=0;
+
+                      if(nuevoMundo.casilla[i+calcTam][j-1].estado === 1){//Esquina superior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-1].estado === 1){//Arriba
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-1].estado === 1){//Esquina superior derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j].estado === 1){//Izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j].estado === 1){//Derecha
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+calcTam][j-calcTam].estado === 1){//Esquina inferior izquierda
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i][j-calcTam].estado === 1){//Abajo
+                         vecinasVivas++;
+                     }if(nuevoMundo.casilla[i+1][j-calcTam].estado === 1){//Esquina inferior derecha
+                         vecinasVivas++;
+                     }
+                     nuevoMundo.casilla[i][j].vecinas = vecinasVivas;
+                     
+        }
+            
+            function turno(){//Esta funcion activa un turno, que se encarga de calcular lo que les ocurre a las celulas basandose en sus vecinas
+                calculaVecinas();//Llamamos a la funcion que calcula y registra las celulas vecinas vivas que tiene cada celula actualmente
+                 for (i = 0; i < tamaño; i++) {//Pasamos por todas las celulas para aplicar el codigo
+                 for (j = 0; j < tamaño; j++) {
+                     
+                if(nuevoMundo.casilla[i][j].estado === 0){//Aqui aplicamos las condiciones del juego de la vida
+                    if(nuevoMundo.casilla[i][j].vecinas === 3){
+                             nuevoMundo.casilla[i][j].cambiaTurno = 1;//Lo guardamos en este cambiaTurno en vez de cambiar directamente el estado para que no interfieran celulas que cambian este turno en sus vecinas
+                             nuevoMundo.casilla[i][j].tiempoViva = 1;//Iniciamos el tiempo que lleva viva
+                         }
+                         } else if(nuevoMundo.casilla[i][j].vecinas === 3){
+                    nuevoMundo.casilla[i][j].cambiaTurno = 1;
+                    nuevoMundo.casilla[i][j].tiempoViva++;//Sumamos al tiempo que lleva viva
+                }else if(nuevoMundo.casilla[i][j].vecinas === 2){
+                    nuevoMundo.casilla[i][j].cambiaTurno = 1;
+                    nuevoMundo.casilla[i][j].tiempoViva++;
+                     }else{
+                         nuevoMundo.casilla[i][j].cambiaTurno = 0;
+                         nuevoMundo.casilla[i][j].tiempoViva = 0;
+                     }
+
+                 }
+                 
+                     
+             }
+             
+             //Ahora recorremos el array de nuevo solo para cambiar los estados, porque si los hubiesemos cambiado antes podrian afectar a los estados de las otras celulas
+              for (i = 0; i < tamaño; i++) {
+                 for (j = 0; j < tamaño; j++) {
+                     if(nuevoMundo.casilla[i][j].cambiaTurno === 2){//Si el valor de cambiaTurno === 2, no hay nada que cambiar
+
+                     }else{
+                         nuevoMundo.casilla[i][j].estado = nuevoMundo.casilla[i][j].cambiaTurno;//Le asignamos el valor que haya cambiado en este turno
+                         nuevoMundo.casilla[i][j].cambiaTurno = 2;//Volvemos a asignar el valor por defecto para el siguiente turno
+                     }
+                 }
+             }
+             tiempoSim++;
+             pintarCelula();//Pintamos para que se vean los efectos de este turno
+             updateText();                
+            }
+ 
+       
+
+        </script>
+    </body>
+</html>
